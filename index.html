@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <!-- Primary SEO -->
+  <title>Hotel Pricing Bot — Telegram-бот для расчёта стоимости проживания</title>
+  <meta name="description" content="Telegram-бот для мгновенного расчёта стоимости проживания в отеле. Гость пишет свободным текстом — бот считает по всем категориям номеров с учётом сезонности. Для отелей, гостиниц, апартаментов.">
+  <meta name="keywords" content="telegram бот отель, расчёт стоимости проживания, бот для отеля, автоматизация отеля, гостиничный бот, hotel bot telegram, прайс отель бот">
+  <meta name="author" content="TripAdvance / Resolution">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://byivus.github.io/hotel-pricing-bot-landing/">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://byivus.github.io/hotel-pricing-bot-landing/">
+  <meta property="og:title" content="Hotel Pricing Bot — Telegram-бот для расчёта стоимости проживания">
+  <meta property="og:description" content="Гость пишет свободным текстом — бот мгновенно рассчитывает стоимость по всем категориям номеров с учётом сезонности. Без форм, без звонков.">
+  <meta property="og:image" content="https://byivus.github.io/hotel-pricing-bot-landing/og-image.png">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="Hotel Pricing Bot">
+
+  <!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Hotel Pricing Bot — Telegram-бот для расчёта стоимости">
+  <meta name="twitter:description" content="Гость пишет свободным текстом — бот считает стоимость по всем номерам с учётом сезонности">
+  <meta name="twitter:image" content="https://byivus.github.io/hotel-pricing-bot-landing/og-image.png">
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Hotel Pricing Bot",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Telegram",
+    "description": "Telegram-бот для расчёта стоимости проживания в отеле. Понимает свободный текст на русском, считает посуточно с учётом сезонности по всем категориям номеров.",
+    "url": "https://byivus.github.io/hotel-pricing-bot-landing/",
+    "offers": {
+      "@type": "Offer",
+      "availability": "https://schema.org/InStock"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "TripAdvance",
+      "url": "https://tripadvance.ru"
+    },
+    "featureList": [
+      "Понимание свободного текста на русском",
+      "Посуточный расчёт с учётом сезонности",
+      "Категории: студия, семейный, стандарт, стандарт+",
+      "Соответствие 152-ФЗ",
+      "Фильтр нецелевых запросов",
+      "Повышенные цены на выходные"
+    ]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Как работает бот?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Гость пишет запрос свободным текстом: «Хочу номер с 15 по 20 июля для двоих взрослых и ребёнка». Бот автоматически распознаёт параметры и рассчитывает стоимость по всем доступным категориям номеров."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Какие мессенджеры поддерживаются?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Сейчас бот работает в Telegram. В планах — подключение MAX мессенджера и интеграция с PMS-системами."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Соответствует ли бот требованиям 152-ФЗ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Да. Встроенный consent flow получает явное согласие гостя на обработку персональных данных до начала расчёта."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Как учитывается сезонность?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Бот делает посуточный расчёт: если период бронирования захватывает несколько ценовых сезонов, стоимость каждых суток считается по актуальному тарифу. Пятница и суббота автоматически считаются выходными с повышенной ценой."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Что такое guard service?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Это фильтр нецелевых запросов. Если гость пишет что-то не по теме (погода, рецепты и т.п.), бот вежливо перенаправляет его к теме бронирования."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #2563EB;
+      --primary-dark: #1D4ED8;
+      --primary-light: #DBEAFE;
+      --accent: #7C3AED;
+      --accent-light: #EDE9FE;
+      --success: #059669;
+      --bg: #F8FAFC;
+      --bg-white: #FFFFFF;
+      --text: #1E293B;
+      --text-muted: #64748B;
+      --text-light: #94A3B8;
+      --border: #E2E8F0;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+      --shadow-md: 0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.06);
+      --shadow-lg: 0 10px 15px rgba(0,0,0,.1), 0 4px 6px rgba(0,0,0,.05);
+      --shadow-xl: 0 20px 25px rgba(0,0,0,.1), 0 10px 10px rgba(0,0,0,.04);
+      --radius: 12px;
+      --radius-lg: 20px;
+      --transition: 0.3s ease;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    img { max-width: 100%; height: auto; }
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ===== TYPOGRAPHY ===== */
+    h1, h2, h3, h4 { line-height: 1.2; font-weight: 700; }
+    h1 { font-size: clamp(2rem, 5vw, 3.5rem); }
+    h2 { font-size: clamp(1.5rem, 3.5vw, 2.5rem); }
+    h3 { font-size: clamp(1.1rem, 2.5vw, 1.4rem); }
+    p { color: var(--text-muted); }
+
+    /* ===== LAYOUT ===== */
+    .container { max-width: 1140px; margin: 0 auto; padding: 0 20px; }
+    section { padding: 80px 0; }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37,99,235,.4); }
+      70% { transform: scale(1); box-shadow: 0 0 0 15px rgba(37,99,235,0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37,99,235,0); }
+    }
+    @keyframes gradient-shift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes typing {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(25px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      transition: var(--transition);
+    }
+    .navbar.scrolled { box-shadow: var(--shadow-md); }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px; max-width: 1140px; margin: 0 auto;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 700; font-size: 1.1rem; color: var(--text);
+      text-decoration: none;
+    }
+    .nav-logo .logo-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a {
+      font-size: .9rem; color: var(--text-muted); font-weight: 500;
+      transition: color var(--transition);
+    }
+    .nav-links a:hover { color: var(--primary); text-decoration: none; }
+    .nav-cta {
+      background: var(--primary);
+      color: #fff !important;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-weight: 600 !important;
+      transition: background var(--transition), transform var(--transition) !important;
+    }
+    .nav-cta:hover { background: var(--primary-dark) !important; transform: translateY(-1px); text-decoration: none !important; }
+    .nav-mobile-btn {
+      display: none; background: none; border: none; cursor: pointer;
+      color: var(--text); padding: 4px;
+    }
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex; flex-direction: column; gap: 0;
+        position: absolute; top: 100%; left: 0; right: 0;
+        background: #fff; border-top: 1px solid var(--border);
+        padding: 12px 0; box-shadow: var(--shadow-lg);
+      }
+      .nav-links.open a { padding: 12px 20px; display: block; }
+      .nav-mobile-btn { display: block; }
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      min-height: 100vh; padding: 120px 0 80px;
+      display: flex; align-items: center;
+      background: linear-gradient(135deg, #EFF6FF 0%, #F0F4FF 40%, #F5F3FF 100%);
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 60% 40%, rgba(37,99,235,.08) 0%, transparent 60%),
+                  radial-gradient(ellipse 60% 50% at 80% 80%, rgba(124,58,237,.07) 0%, transparent 60%);
+    }
+    .hero-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+      position: relative;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--primary-light); color: var(--primary);
+      padding: 6px 16px; border-radius: 100px;
+      font-size: .85rem; font-weight: 600; margin-bottom: 20px;
+      animation: fadeIn 0.6s ease;
+    }
+    .hero-badge .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--success); flex-shrink: 0;
+      animation: pulse-ring 2s infinite;
+    }
+    .hero-title {
+      margin-bottom: 24px;
+      animation: fadeInUp 0.7s ease 0.1s both;
+    }
+    .hero-title .highlight {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-desc {
+      font-size: 1.15rem; color: var(--text-muted);
+      margin-bottom: 36px; max-width: 520px;
+      animation: fadeInUp 0.7s ease 0.2s both;
+    }
+    .hero-actions {
+      display: flex; gap: 16px; flex-wrap: wrap;
+      animation: fadeInUp 0.7s ease 0.3s both;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 28px; border-radius: 10px;
+      font-size: 1rem; font-weight: 600; cursor: pointer;
+      transition: all var(--transition); text-decoration: none;
+      border: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      background-size: 200% 200%;
+      color: #fff; box-shadow: 0 4px 15px rgba(37,99,235,.35);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(37,99,235,.45);
+      text-decoration: none; color: #fff;
+      animation: gradient-shift 3s ease infinite;
+    }
+    .btn-outline {
+      background: transparent; color: var(--text);
+      border: 2px solid var(--border);
+    }
+    .btn-outline:hover {
+      border-color: var(--primary); color: var(--primary);
+      transform: translateY(-2px); text-decoration: none;
+    }
+
+    /* Chat Demo */
+    .hero-visual {
+      display: flex; justify-content: center;
+      animation: fadeIn 0.8s ease 0.2s both;
+    }
+    .chat-demo {
+      background: #fff; border-radius: 24px;
+      box-shadow: var(--shadow-xl);
+      width: 100%; max-width: 380px;
+      overflow: hidden;
+      animation: float 4s ease-in-out infinite;
+    }
+    .chat-header {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      padding: 16px 20px;
+      display: flex; align-items: center; gap: 12px; color: #fff;
+    }
+    .chat-avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: rgba(255,255,255,.25);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .chat-header-info { flex: 1; }
+    .chat-header-name { font-weight: 700; font-size: .95rem; }
+    .chat-header-status { font-size: .75rem; opacity: .85; }
+    .chat-messages { padding: 16px; display: flex; flex-direction: column; gap: 10px; min-height: 260px; }
+    .msg {
+      max-width: 85%; padding: 10px 14px; border-radius: 18px;
+      font-size: .88rem; line-height: 1.5;
+    }
+    .msg-user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff; border-bottom-right-radius: 4px;
+    }
+    .msg-bot {
+      align-self: flex-start;
+      background: var(--bg); color: var(--text);
+      border-bottom-left-radius: 4px;
+      border: 1px solid var(--border);
+    }
+    .msg-bot .price-row {
+      display: flex; justify-content: space-between;
+      padding: 4px 0; border-bottom: 1px solid var(--border);
+      gap: 12px;
+    }
+    .msg-bot .price-row:last-child { border-bottom: none; }
+    .msg-bot .price-name { color: var(--text-muted); font-size: .82rem; }
+    .msg-bot .price-val { font-weight: 700; color: var(--primary); white-space: nowrap; }
+    .msg-time {
+      font-size: .7rem; opacity: .5; margin-top: 3px;
+      text-align: right;
+    }
+    .typing-indicator {
+      display: flex; gap: 4px; align-items: center;
+      padding: 12px 14px;
+    }
+    .typing-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--text-light);
+      animation: typing 1.2s infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: .2s; }
+    .typing-dot:nth-child(3) { animation-delay: .4s; }
+
+    @media (max-width: 900px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+      .hero-visual { order: -1; }
+      .chat-demo { max-width: 340px; }
+    }
+    @media (max-width: 480px) {
+      .hero { padding: 100px 0 60px; }
+      .hero-actions { flex-direction: column; }
+      .btn { width: 100%; justify-content: center; }
+    }
+
+    /* ===== HOW IT WORKS ===== */
+    .how { background: var(--bg-white); }
+    .section-label {
+      text-align: center; margin-bottom: 12px;
+      font-size: .85rem; font-weight: 600;
+      color: var(--primary); text-transform: uppercase; letter-spacing: .08em;
+    }
+    .section-title { text-align: center; margin-bottom: 16px; }
+    .section-desc {
+      text-align: center; max-width: 580px; margin: 0 auto 56px;
+      font-size: 1.05rem;
+    }
+    .steps-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 32px; position: relative;
+    }
+    .step {
+      text-align: center; padding: 32px 24px;
+      background: var(--bg);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .step:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lg);
+    }
+    .step-num {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff; font-weight: 700; font-size: 1.2rem;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 4px 12px rgba(37,99,235,.3);
+    }
+    .step-icon { font-size: 2.2rem; margin-bottom: 16px; }
+    .step h3 { margin-bottom: 10px; font-size: 1.05rem; }
+    .step p { font-size: .9rem; }
+
+    /* ===== FEATURES ===== */
+    .features { background: linear-gradient(180deg, var(--bg) 0%, var(--bg-white) 100%); }
+    .features-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+    .feature-card {
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      transition: all var(--transition);
+      position: relative; overflow: hidden;
+    }
+    .feature-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      opacity: 0; transition: opacity var(--transition);
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: transparent;
+    }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-icon {
+      width: 52px; height: 52px; border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem; margin-bottom: 18px;
+    }
+    .feature-icon.blue { background: var(--primary-light); }
+    .feature-icon.purple { background: var(--accent-light); }
+    .feature-icon.green { background: #DCFCE7; }
+    .feature-icon.orange { background: #FEF3C7; }
+    .feature-icon.pink { background: #FCE7F3; }
+    .feature-icon.teal { background: #CCFBF1; }
+    .feature-card h3 { margin-bottom: 8px; }
+    .feature-card p { font-size: .92rem; }
+    .feature-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      margin-top: 12px; padding: 4px 10px; border-radius: 100px;
+      font-size: .75rem; font-weight: 600;
+    }
+    .badge-blue { background: var(--primary-light); color: var(--primary); }
+    .badge-purple { background: var(--accent-light); color: var(--accent); }
+    .badge-green { background: #DCFCE7; color: var(--success); }
+
+    /* ===== FOR WHOM ===== */
+    .for-whom { background: var(--bg-white); }
+    .audience-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 28px;
+    }
+    .audience-card {
+      border-radius: var(--radius-lg);
+      padding: 36px 28px; text-align: center;
+      transition: transform var(--transition), box-shadow var(--transition);
+      position: relative; overflow: hidden;
+    }
+    .audience-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-xl); }
+    .audience-card.card-blue {
+      background: linear-gradient(135deg, #EFF6FF, #E0EAFF);
+      border: 1px solid #BFDBFE;
+    }
+    .audience-card.card-purple {
+      background: linear-gradient(135deg, #F5F3FF, #EDE9FE);
+      border: 1px solid #DDD6FE;
+    }
+    .audience-card.card-green {
+      background: linear-gradient(135deg, #F0FDF4, #DCFCE7);
+      border: 1px solid #BBF7D0;
+    }
+    .audience-emoji { font-size: 3rem; margin-bottom: 16px; display: block; }
+    .audience-card h3 { margin-bottom: 10px; }
+    .audience-card p { font-size: .92rem; }
+    .audience-perks { margin-top: 16px; list-style: none; text-align: left; }
+    .audience-perks li {
+      padding: 5px 0; font-size: .88rem; color: var(--text-muted);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .audience-perks li::before { content: '✓'; color: var(--success); font-weight: 700; flex-shrink: 0; }
+
+    /* ===== STATS ===== */
+    .stats { background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); color: #fff; padding: 60px 0; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 32px; }
+    .stat-item { text-align: center; }
+    .stat-num {
+      font-size: clamp(2rem, 4vw, 3rem); font-weight: 800;
+      display: block; margin-bottom: 6px;
+    }
+    .stat-label { font-size: .9rem; opacity: .85; }
+
+    /* ===== FAQ ===== */
+    .faq { background: var(--bg); }
+    .faq-list { max-width: 760px; margin: 0 auto; }
+    .faq-item {
+      background: var(--bg-white); border: 1px solid var(--border);
+      border-radius: var(--radius); margin-bottom: 12px;
+      overflow: hidden; transition: box-shadow var(--transition);
+    }
+    .faq-item.open { box-shadow: var(--shadow-md); }
+    .faq-question {
+      width: 100%; text-align: left; background: none; border: none;
+      padding: 20px 24px; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      font-size: 1rem; font-weight: 600; color: var(--text);
+      transition: color var(--transition);
+    }
+    .faq-question:hover { color: var(--primary); }
+    .faq-arrow {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--bg); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .8rem; transition: transform var(--transition), background var(--transition);
+    }
+    .faq-item.open .faq-arrow { transform: rotate(180deg); background: var(--primary-light); }
+    .faq-answer {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.4s ease;
+    }
+    .faq-item.open .faq-answer { max-height: 200px; }
+    .faq-answer-inner { padding: 0 24px 20px; color: var(--text-muted); line-height: 1.7; }
+
+    /* ===== CTA BANNER ===== */
+    .cta-banner {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      padding: 80px 0; text-align: center; color: #fff;
+      position: relative; overflow: hidden;
+    }
+    .cta-banner::before {
+      content: ''; position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .cta-banner h2 { color: #fff; margin-bottom: 16px; position: relative; }
+    .cta-banner p { font-size: 1.1rem; opacity: .9; margin-bottom: 36px; position: relative; color: rgba(255,255,255,.9); }
+    .btn-white {
+      background: #fff; color: var(--primary);
+      box-shadow: 0 4px 15px rgba(0,0,0,.15);
+      position: relative;
+    }
+    .btn-white:hover {
+      transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,.2);
+      text-decoration: none; color: var(--primary);
+    }
+    .btn-ghost-white {
+      background: transparent; color: #fff;
+      border: 2px solid rgba(255,255,255,.5);
+      position: relative;
+    }
+    .btn-ghost-white:hover {
+      border-color: #fff; background: rgba(255,255,255,.1);
+      text-decoration: none; color: #fff; transform: translateY(-2px);
+    }
+    .cta-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--text); color: rgba(255,255,255,.7);
+      padding: 48px 0 24px;
+    }
+    .footer-grid {
+      display: grid; grid-template-columns: 2fr 1fr 1fr;
+      gap: 48px; margin-bottom: 40px;
+    }
+    .footer-brand { }
+    .footer-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 700; font-size: 1.1rem; color: #fff;
+      margin-bottom: 14px;
+    }
+    .footer-logo .logo-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .footer-desc { font-size: .9rem; line-height: 1.7; max-width: 300px; }
+    .footer-col h4 { color: #fff; font-size: .9rem; margin-bottom: 16px; }
+    .footer-links { list-style: none; }
+    .footer-links li { margin-bottom: 10px; }
+    .footer-links a { color: rgba(255,255,255,.6); font-size: .88rem; transition: color var(--transition); }
+    .footer-links a:hover { color: #fff; text-decoration: none; }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,.1);
+      padding-top: 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 12px;
+      font-size: .82rem;
+    }
+    @media (max-width: 768px) {
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .footer-brand { grid-column: 1 / -1; }
+    }
+    @media (max-width: 480px) {
+      .footer-grid { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+    }
+
+    /* ===== SCROLL TOP ===== */
+    .scroll-top {
+      position: fixed; bottom: 28px; right: 28px; z-index: 99;
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--primary); color: #fff; border: none; cursor: pointer;
+      box-shadow: var(--shadow-lg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      opacity: 0; transform: translateY(10px);
+      transition: all var(--transition);
+    }
+    .scroll-top.visible { opacity: 1; transform: translateY(0); }
+    .scroll-top:hover { background: var(--primary-dark); transform: translateY(-2px); }
+
+    /* ===== TELEGRAM FLOAT ===== */
+    .tg-float {
+      position: fixed; bottom: 28px; left: 28px; z-index: 99;
+      background: #2AABEE; color: #fff;
+      border-radius: 100px; border: none; cursor: pointer;
+      padding: 12px 20px;
+      display: flex; align-items: center; gap: 8px;
+      font-size: .9rem; font-weight: 600;
+      box-shadow: 0 4px 20px rgba(42,171,238,.4);
+      transition: all var(--transition); text-decoration: none;
+    }
+    .tg-float:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(42,171,238,.5); color: #fff; text-decoration: none; }
+    .tg-float svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+    /* ===== MISC ===== */
+    .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .tag {
+      padding: 4px 12px; border-radius: 100px;
+      font-size: .78rem; font-weight: 600;
+      background: var(--bg); border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+    .soon-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: #FEF3C7; color: #92400E;
+      padding: 3px 10px; border-radius: 100px; font-size: .75rem; font-weight: 600;
+      margin-left: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar" id="navbar" aria-label="Основная навигация">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo" aria-label="Hotel Pricing Bot — на главную">
+      <div class="logo-icon" aria-hidden="true">🏨</div>
+      <span>Hotel Pricing Bot</span>
+    </a>
+    <ul class="nav-links" id="nav-links" role="list">
+      <li><a href="#how">Как работает</a></li>
+      <li><a href="#features">Возможности</a></li>
+      <li><a href="#for-whom">Для кого</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="https://t.me/tarate_bot" class="nav-cta" target="_blank" rel="noopener">Попробовать</a></li>
+    </ul>
+    <button class="nav-mobile-btn" id="nav-btn" aria-label="Открыть меню" aria-expanded="false">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="home" aria-label="Главный экран">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="dot" aria-hidden="true"></span>
+          Бот работает прямо сейчас
+        </div>
+        <h1 class="hero-title">
+          Цену на номер — <span class="highlight">за секунду</span>, в Telegram
+        </h1>
+        <p class="hero-desc">
+          Гость пишет свободным текстом: «Хочу на выходные, двое взрослых и ребёнок». Бот моментально рассчитывает стоимость по всем категориям номеров с учётом сезонности.
+        </p>
+        <div class="hero-actions">
+          <a href="https://t.me/tarate_bot" class="btn btn-primary" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+            Попробовать бесплатно
+          </a>
+          <a href="#how" class="btn btn-outline">
+            Как это работает
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+          </a>
+        </div>
+        <div class="tags" aria-label="Ключевые характеристики">
+          <span class="tag">🆓 Бесплатный тест</span>
+          <span class="tag">🤖 AI-понимание текста</span>
+          <span class="tag">📅 Сезонные тарифы</span>
+          <span class="tag">🔒 152-ФЗ</span>
+        </div>
+      </div>
+
+      <!-- Chat demo -->
+      <div class="hero-visual" aria-hidden="true">
+        <div class="chat-demo" role="img" aria-label="Демонстрация работы бота">
+          <div class="chat-header">
+            <div class="chat-avatar">🏨</div>
+            <div class="chat-header-info">
+              <div class="chat-header-name">Hotel Pricing Bot</div>
+              <div class="chat-header-status">● онлайн</div>
+            </div>
+          </div>
+          <div class="chat-messages">
+            <div class="msg msg-user">
+              Хочу с 20 по 25 июля, двое взрослых и ребёнок 8 лет
+              <div class="msg-time">14:32</div>
+            </div>
+            <div class="msg msg-bot">
+              Посчитал стоимость на 5 ночей ☀️
+              <br><br>
+              <div class="price-row">
+                <span class="price-name">Студия</span>
+                <span class="price-val">18 500 ₽</span>
+              </div>
+              <div class="price-row">
+                <span class="price-name">Стандарт</span>
+                <span class="price-val">22 400 ₽</span>
+              </div>
+              <div class="price-row">
+                <span class="price-name">Стандарт+</span>
+                <span class="price-val">26 800 ₽</span>
+              </div>
+              <div class="price-row">
+                <span class="price-name">Семейный</span>
+                <span class="price-val">31 200 ₽</span>
+              </div>
+              <div class="msg-time">14:32</div>
+            </div>
+            <div class="msg msg-user">
+              Отлично! Бронирую стандарт+
+              <div class="msg-time">14:33</div>
+            </div>
+            <div class="msg msg-bot">
+              <div class="typing-indicator">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STATS ===== -->
+<section class="stats" aria-label="Ключевые показатели">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item reveal">
+        <span class="stat-num">~3 сек</span>
+        <span class="stat-label">Время расчёта стоимости</span>
+      </div>
+      <div class="stat-item reveal reveal-delay-1">
+        <span class="stat-num">4</span>
+        <span class="stat-label">Категории номеров</span>
+      </div>
+      <div class="stat-item reveal reveal-delay-2">
+        <span class="stat-num">100%</span>
+        <span class="stat-label">Соответствие 152-ФЗ</span>
+      </div>
+      <div class="stat-item reveal reveal-delay-3">
+        <span class="stat-num">24/7</span>
+        <span class="stat-label">Бот работает без остановок</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section class="how" id="how" aria-labelledby="how-title">
+  <div class="container">
+    <p class="section-label reveal">Принцип работы</p>
+    <h2 class="section-title reveal" id="how-title">Четыре шага от вопроса до цены</h2>
+    <p class="section-desc reveal">Никаких форм, никаких звонков. Гость получает расчёт прямо в Telegram за несколько секунд.</p>
+    <div class="steps-grid">
+      <div class="step reveal reveal-delay-1">
+        <div class="step-icon">✍️</div>
+        <div class="step-num">1</div>
+        <h3>Гость пишет свободным текстом</h3>
+        <p>«Хочу номер с 15 по 20 июля для 2 взрослых и ребёнка» — бот понимает любую формулировку на русском.</p>
+      </div>
+      <div class="step reveal reveal-delay-2">
+        <div class="step-icon">🧠</div>
+        <div class="step-num">2</div>
+        <h3>AI извлекает параметры</h3>
+        <p>LLM автоматически определяет даты, количество гостей и другие детали из сообщения.</p>
+      </div>
+      <div class="step reveal reveal-delay-3">
+        <div class="step-icon">🧮</div>
+        <div class="step-num">3</div>
+        <h3>Посуточный расчёт</h3>
+        <p>Стоимость считается по каждым суткам: учитываются смены сезонов, повышенные цены на пятницу и субботу.</p>
+      </div>
+      <div class="step reveal reveal-delay-4">
+        <div class="step-icon">📋</div>
+        <div class="step-num">4</div>
+        <h3>Полная таблица цен</h3>
+        <p>Гость получает сравнение по всем доступным категориям номеров — и выбирает подходящий вариант.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURES ===== -->
+<section class="features" id="features" aria-labelledby="features-title">
+  <div class="container">
+    <p class="section-label reveal">Возможности</p>
+    <h2 class="section-title reveal" id="features-title">Всё что нужно для продаж через Telegram</h2>
+    <p class="section-desc reveal">Продуманные функции для отеля любого масштаба</p>
+    <div class="features-grid">
+      <article class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon blue" aria-hidden="true">💬</div>
+        <h3>Понимание свободного текста</h3>
+        <p>LLM распознаёт запрос в любой формулировке. Гостю не нужно следовать строгому шаблону — пишет как привык.</p>
+        <span class="feature-badge badge-blue">AI-powered</span>
+      </article>
+      <article class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon purple" aria-hidden="true">📅</div>
+        <h3>Посуточный расчёт с сезонностью</h3>
+        <p>Каждые сутки считаются по актуальному тарифу. Если период захватывает несколько сезонов — цена корректируется автоматически.</p>
+        <span class="feature-badge badge-purple">Точность 100%</span>
+      </article>
+      <article class="feature-card reveal reveal-delay-3">
+        <div class="feature-icon green" aria-hidden="true">🏨</div>
+        <h3>Все категории номеров</h3>
+        <p>Студия, Семейный, Стандарт, Стандарт+ — гость получает цены по всем вариантам в одном ответе.</p>
+        <span class="feature-badge badge-green">4 категории</span>
+      </article>
+      <article class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon orange" aria-hidden="true">📆</div>
+        <h3>Выходные = пятница + суббота</h3>
+        <p>Weekend-тариф автоматически применяется к пятнице и субботе. Повышенные цены на выходные учитываются без ручных настроек.</p>
+      </article>
+      <article class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon pink" aria-hidden="true">🔒</div>
+        <h3>Соответствие 152-ФЗ</h3>
+        <p>Встроенный consent flow: гость даёт явное согласие на обработку персональных данных перед расчётом. Всё задокументировано.</p>
+      </article>
+      <article class="feature-card reveal reveal-delay-3">
+        <div class="feature-icon teal" aria-hidden="true">🛡️</div>
+        <h3>Guard service</h3>
+        <p>Фильтр нецелевых запросов. Бот занимается только расчётом стоимости — никаких разговоров о погоде или рецептах.</p>
+      </article>
+    </div>
+    <div style="text-align:center; margin-top: 40px;" class="reveal">
+      <p style="font-size:.95rem; color: var(--text-muted); margin-bottom: 12px;">В планах:</p>
+      <div style="display: inline-flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+        <span style="padding: 8px 18px; border-radius: 100px; background: var(--bg-white); border: 1px solid var(--border); font-size: .88rem; color: var(--text-muted);">
+          MAX мессенджер <span class="soon-badge">Скоро</span>
+        </span>
+        <span style="padding: 8px 18px; border-radius: 100px; background: var(--bg-white); border: 1px solid var(--border); font-size: .88rem; color: var(--text-muted);">
+          Интеграция с PMS <span class="soon-badge">Скоро</span>
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOR WHOM ===== -->
+<section class="for-whom" id="for-whom" aria-labelledby="forwhom-title">
+  <div class="container">
+    <p class="section-label reveal">Для кого</p>
+    <h2 class="section-title reveal" id="forwhom-title">Подходит для любого объекта размещения</h2>
+    <p class="section-desc reveal">От небольших гостиниц до апарт-отелей — бот адаптируется под ваши категории и тарифы.</p>
+    <div class="audience-grid">
+      <article class="audience-card card-blue reveal reveal-delay-1">
+        <span class="audience-emoji" aria-hidden="true">🏨</span>
+        <h3>Отели и гостиницы</h3>
+        <p>Разгрузите администраторов от рутинных расчётов. Гости получают ответ мгновенно — в любое время суток.</p>
+        <ul class="audience-perks">
+          <li>Расчёт за 3–5 секунд</li>
+          <li>Сравнение всех номеров</li>
+          <li>Без пропущенных звонков</li>
+        </ul>
+      </article>
+      <article class="audience-card card-purple reveal reveal-delay-2">
+        <span class="audience-emoji" aria-hidden="true">🏠</span>
+        <h3>Апартаменты и апарт-отели</h3>
+        <p>Гибкое ценообразование по сезонам и типам апартаментов — бот покажет все варианты в одном сообщении.</p>
+        <ul class="audience-perks">
+          <li>Несколько типов апартаментов</li>
+          <li>Сезонные надбавки</li>
+          <li>Понимание деталей запроса</li>
+        </ul>
+      </article>
+      <article class="audience-card card-green reveal reveal-delay-3">
+        <span class="audience-emoji" aria-hidden="true">🌴</span>
+        <h3>Санатории и базы отдыха</h3>
+        <p>Учёт детей, взрослых и специальных категорий гостей. Сложные тарифные сетки — без путаницы.</p>
+        <ul class="audience-perks">
+          <li>Дифференциация гостей</li>
+          <li>Комплексные тарифы</li>
+          <li>Работает 24/7</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section class="faq" id="faq" aria-labelledby="faq-title">
+  <div class="container">
+    <p class="section-label reveal">FAQ</p>
+    <h2 class="section-title reveal" id="faq-title">Частые вопросы</h2>
+    <p class="section-desc reveal">Если не нашли ответа — напишите нам</p>
+
+    <div class="faq-list" role="list">
+      <div class="faq-item reveal" role="listitem">
+        <button class="faq-question" aria-expanded="false">
+          Как работает бот?
+          <span class="faq-arrow" aria-hidden="true">▼</span>
+        </button>
+        <div class="faq-answer" role="region">
+          <div class="faq-answer-inner">
+            Гость пишет запрос свободным текстом: «Хочу номер с 15 по 20 июля для двоих взрослых и ребёнка». LLM автоматически извлекает параметры и передаёт их в движок расчёта стоимости. Бот возвращает таблицу цен по всем доступным категориям номеров в течение 3–5 секунд.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item reveal reveal-delay-1" role="listitem">
+        <button class="faq-question" aria-expanded="false">
+          Какие мессенджеры поддерживаются?
+          <span class="faq-arrow" aria-hidden="true">▼</span>
+        </button>
+        <div class="faq-answer" role="region">
+          <div class="faq-answer-inner">
+            Сейчас бот работает в Telegram. В ближайших планах — подключение MAX мессенджера (бывший Mail.ru) и интеграция с PMS-системами для автоматической синхронизации тарифов.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item reveal reveal-delay-2" role="listitem">
+        <button class="faq-question" aria-expanded="false">
+          Соответствует ли бот требованиям 152-ФЗ?
+          <span class="faq-arrow" aria-hidden="true">▼</span>
+        </button>
+        <div class="faq-answer" role="region">
+          <div class="faq-answer-inner">
+            Да. Встроенный consent flow запрашивает явное согласие гостя на обработку персональных данных до начала любого расчёта. Все данные хранятся в соответствии с требованиями российского законодательства.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item reveal reveal-delay-3" role="listitem">
+        <button class="faq-question" aria-expanded="false">
+          Как учитывается сезонность?
+          <span class="faq-arrow" aria-hidden="true">▼</span>
+        </button>
+        <div class="faq-answer" role="region">
+          <div class="faq-answer-inner">
+            Бот делает посуточный расчёт: каждые сутки считаются по тарифу, действующему в этот день. Если период бронирования захватывает несколько ценовых сезонов — стоимость каждого дня рассчитывается отдельно. Пятница и суббота автоматически считаются выходными с повышенным тарифом.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item reveal" role="listitem">
+        <button class="faq-question" aria-expanded="false">
+          Что такое guard service?
+          <span class="faq-arrow" aria-hidden="true">▼</span>
+        </button>
+        <div class="faq-answer" role="region">
+          <div class="faq-answer-inner">
+            Это фильтр нецелевых запросов. Если гость пишет что-то не связанное с расчётом стоимости проживания (погода, рецепты, общие вопросы), бот вежливо сообщает о своей специализации и предлагает вернуться к теме бронирования.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item reveal reveal-delay-1" role="listitem">
+        <button class="faq-question" aria-expanded="false">
+          Как подключить бот к своему отелю?
+          <span class="faq-arrow" aria-hidden="true">▼</span>
+        </button>
+        <div class="faq-answer" role="region">
+          <div class="faq-answer-inner">
+            Свяжитесь с нами через сайт tripadvance.ru или resolution.ru. Мы настраиваем бот под ваши категории номеров, тарифную сетку и сезонность. Среднее время внедрения — от нескольких дней.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section class="cta-banner" aria-labelledby="cta-title">
+  <div class="container">
+    <h2 id="cta-title">Готовы автоматизировать расчёт стоимости?</h2>
+    <p>Попробуйте тестового бота прямо сейчас — без регистрации и без обязательств</p>
+    <div class="cta-actions">
+      <a href="https://t.me/tarate_bot" class="btn btn-white" target="_blank" rel="noopener">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#2563EB" aria-hidden="true"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        Открыть @tarate_bot
+      </a>
+      <a href="https://tripadvance.ru" class="btn btn-ghost-white" target="_blank" rel="noopener">
+        Связаться с нами
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer aria-label="Подвал сайта">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <div class="logo-icon" aria-hidden="true">🏨</div>
+          <span>Hotel Pricing Bot</span>
+        </div>
+        <p class="footer-desc">
+          Telegram-бот для мгновенного расчёта стоимости проживания. Разработан командой TripAdvance / Resolution для автоматизации отелей.
+        </p>
+      </div>
+      <nav aria-label="Разделы сайта">
+        <h4>Навигация</h4>
+        <ul class="footer-links">
+          <li><a href="#how">Как работает</a></li>
+          <li><a href="#features">Возможности</a></li>
+          <li><a href="#for-whom">Для кого</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </nav>
+      <div>
+        <h4>Контакты</h4>
+        <ul class="footer-links">
+          <li><a href="https://t.me/tarate_bot" target="_blank" rel="noopener">@tarate_bot в Telegram</a></li>
+          <li><a href="https://tripadvance.ru" target="_blank" rel="noopener">tripadvance.ru</a></li>
+          <li><a href="https://resolution.ru" target="_blank" rel="noopener">resolution.ru</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Hotel Pricing Bot. TripAdvance / Resolution</span>
+      <span>Сделано в Анапе 🌊</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Floating CTA -->
+<a href="https://t.me/tarate_bot" class="tg-float" target="_blank" rel="noopener" aria-label="Открыть бота в Telegram">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+  Попробовать
+</a>
+
+<!-- Scroll to top -->
+<button class="scroll-top" id="scroll-top" aria-label="Наверх">↑</button>
+
+<script>
+  // ===== NAVBAR scroll =====
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 20);
+    document.getElementById('scroll-top').classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+
+  // ===== Mobile menu =====
+  const navBtn = document.getElementById('nav-btn');
+  const navLinks = document.getElementById('nav-links');
+  navBtn.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('open');
+    navBtn.setAttribute('aria-expanded', open);
+  });
+  navLinks.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => navLinks.classList.remove('open'));
+  });
+
+  // ===== Scroll reveal =====
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  revealEls.forEach(el => observer.observe(el));
+
+  // ===== FAQ accordion =====
+  document.querySelectorAll('.faq-question').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => {
+        i.classList.remove('open');
+        i.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+      });
+      if (!isOpen) {
+        item.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+
+  // ===== Scroll top =====
+  document.getElementById('scroll-top').addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // ===== Smooth scroll for anchor links =====
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        const offset = 70;
+        window.scrollTo({ top: target.offsetTop - offset, behavior: 'smooth' });
+      }
+    });
+  });
+</script>
+</body>
+</html>
