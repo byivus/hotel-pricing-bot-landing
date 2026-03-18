@@ -97,6 +97,14 @@
       },
       {
         "@type": "Question",
+        "name": "Что если гостей больше, чем вмещает один номер?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Бот автоматически определит, что один номер не подойдёт, и предложит варианты размещения в нескольких номерах. Гость может выбрать готовый вариант или собрать набор номеров самостоятельно — поэтапно добавляя категории в корзину."
+        }
+      },
+      {
+        "@type": "Question",
         "name": "Что такое guard service?",
         "acceptedAnswer": {
           "@type": "Answer",
@@ -806,8 +814,8 @@
         <span class="stat-label">Время расчёта стоимости</span>
       </div>
       <div class="stat-item reveal reveal-delay-1">
-        <span class="stat-num">4</span>
-        <span class="stat-label">Категории номеров</span>
+        <span class="stat-num">∞</span>
+        <span class="stat-label">Комбинаций мульти-номерного расчёта</span>
       </div>
       <div class="stat-item reveal reveal-delay-2">
         <span class="stat-num">100%</span>
@@ -849,8 +857,8 @@
       <div class="step reveal reveal-delay-4">
         <div class="step-icon">📋</div>
         <div class="step-num">4</div>
-        <h3>Полная таблица цен</h3>
-        <p>Гость получает сравнение по всем доступным категориям номеров — и выбирает подходящий вариант.</p>
+        <h3>Результат</h3>
+        <p>Гость получает цены по всем категориям. Если нужно несколько номеров — собирает набор в корзину и получает итоговый расчёт.</p>
       </div>
     </div>
   </div>
@@ -895,6 +903,12 @@
         <div class="feature-icon teal" aria-hidden="true">🛡️</div>
         <h3>Guard service</h3>
         <p>Фильтр нецелевых запросов. Бот занимается только расчётом стоимости — никаких разговоров о погоде или рецептах.</p>
+      </article>
+      <article class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon blue" aria-hidden="true">🏘️</div>
+        <h3>Несколько номеров</h3>
+        <p>Если гостей больше, чем вмещает один номер — бот автоматически предложит мульти-номерной расчёт. Гость собирает набор номеров в корзину и получает итоговую стоимость.</p>
+        <span class="feature-badge badge-blue">Новое</span>
       </article>
     </div>
     <div style="text-align:center; margin-top: 40px;" class="reveal">
@@ -1028,6 +1042,18 @@
         <div class="faq-answer" role="region">
           <div class="faq-answer-inner">
             Свяжитесь с нами через сайт tripadvance.ru или resolution.ru. Мы настраиваем бот под ваши категории номеров, тарифную сетку и сезонность. Среднее время внедрения — от нескольких дней.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item reveal reveal-delay-2" role="listitem">
+        <button class="faq-question" aria-expanded="false">
+          Что если гостей больше, чем вмещает один номер?
+          <span class="faq-arrow" aria-hidden="true">▼</span>
+        </button>
+        <div class="faq-answer" role="region">
+          <div class="faq-answer-inner">
+            Бот автоматически определит, что один номер не подойдёт, и предложит варианты размещения в нескольких номерах. Гость может выбрать готовый вариант или собрать набор номеров самостоятельно — поэтапно добавляя категории в корзину.
           </div>
         </div>
       </div>
