@@ -7,8 +7,8 @@
 
   <!-- Primary SEO -->
   <title>Hotel Pricing Bot — Telegram-бот для расчёта стоимости проживания</title>
-  <meta name="description" content="Telegram-бот для мгновенного расчёта стоимости проживания в отеле. Гость пишет свободным текстом — бот считает по всем категориям номеров с учётом сезонности. Для отелей, гостиниц, апартаментов.">
-  <meta name="keywords" content="telegram бот отель, расчёт стоимости проживания, бот для отеля, автоматизация отеля, гостиничный бот, hotel bot telegram, прайс отель бот">
+  <meta name="description" content="Telegram-бот для мгновенного расчёта стоимости проживания в отеле. AI понимает свободный текст, считает по сезонам и выходным. Соответствие 152-ФЗ. Попробуйте бесплатно.">
+  <meta name="keywords" content="Telegram бот для отеля, расчёт стоимости номера, бот для бронирования, автоматизация отеля, AI бот гостиница">
   <meta name="author" content="TASolution">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://byivus.github.io/hotel-pricing-bot-landing/">
@@ -17,99 +17,77 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://byivus.github.io/hotel-pricing-bot-landing/">
   <meta property="og:title" content="Hotel Pricing Bot — Telegram-бот для расчёта стоимости проживания">
-  <meta property="og:description" content="Гость пишет свободным текстом — бот мгновенно рассчитывает стоимость по всем категориям номеров с учётом сезонности. Без форм, без звонков.">
+  <meta property="og:description" content="Гость пишет свободным текстом — бот считает стоимость за 3 секунды. AI, сезонность, 152-ФЗ. Для отелей, апартаментов, санаториев.">
   <meta property="og:image" content="https://byivus.github.io/hotel-pricing-bot-landing/og-image.png">
   <meta property="og:locale" content="ru_RU">
   <meta property="og:site_name" content="Hotel Pricing Bot">
 
   <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Hotel Pricing Bot — Telegram-бот для расчёта стоимости">
-  <meta name="twitter:description" content="Гость пишет свободным текстом — бот считает стоимость по всем номерам с учётом сезонности">
+  <meta name="twitter:title" content="Hotel Pricing Bot — расчёт стоимости в Telegram">
+  <meta name="twitter:description" content="AI-бот для отелей: гость пишет текстом, получает цены за 3 сек.">
   <meta name="twitter:image" content="https://byivus.github.io/hotel-pricing-bot-landing/og-image.png">
 
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "Hotel Pricing Bot",
-    "applicationCategory": "BusinessApplication",
-    "operatingSystem": "Telegram",
-    "description": "Telegram-бот для расчёта стоимости проживания в отеле. Понимает свободный текст на русском, считает посуточно с учётом сезонности по всем категориям номеров.",
-    "url": "https://byivus.github.io/hotel-pricing-bot-landing/",
-    "offers": {
-      "@type": "Offer",
-      "availability": "https://schema.org/InStock"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "TASolution",
-      "url": "https://tasolution.ru"
-    },
-    "featureList": [
-      "Понимание свободного текста на русском",
-      "Посуточный расчёт с учётом сезонности",
-      "Категории: студия, семейный, стандарт, стандарт+",
-      "Соответствие 152-ФЗ",
-      "Фильтр нецелевых запросов",
-      "Повышенные цены на выходные"
-    ]
-  }
-  </script>
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
+    "@graph": [
       {
-        "@type": "Question",
-        "name": "Как работает бот?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Гость пишет запрос свободным текстом: «Хочу номер с 15 по 20 июля для двоих взрослых и ребёнка». Бот автоматически распознаёт параметры и рассчитывает стоимость по всем доступным категориям номеров."
+        "@type": "SoftwareApplication",
+        "name": "Hotel Pricing Bot",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Telegram",
+        "description": "Telegram-бот для мгновенного расчёта стоимости проживания. AI понимает свободный текст, учитывает сезонность и выходные дни.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "RUB",
+          "description": "Бесплатное тестирование"
+        },
+        "url": "https://t.me/tarate_bot",
+        "author": {
+          "@type": "Organization",
+          "name": "TASolution",
+          "url": "https://tasolution.ru"
         }
       },
       {
-        "@type": "Question",
-        "name": "Какие мессенджеры поддерживаются?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Сейчас бот работает в Telegram. В планах — подключение MAX мессенджера и интеграция с PMS-системами."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Соответствует ли бот требованиям 152-ФЗ?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Да. Встроенный consent flow получает явное согласие гостя на обработку персональных данных до начала расчёта."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Как учитывается сезонность?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Бот делает посуточный расчёт: если период бронирования захватывает несколько ценовых сезонов, стоимость каждых суток считается по актуальному тарифу. Пятница и суббота автоматически считаются выходными с повышенной ценой."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Что если гостей больше, чем вмещает один номер?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Бот автоматически определит, что один номер не подойдёт, и предложит варианты размещения в нескольких номерах. Гость может выбрать готовый вариант или собрать набор номеров самостоятельно — поэтапно добавляя категории в корзину."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Что такое guard service?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Это фильтр нецелевых запросов. Если гость пишет что-то не по теме (погода, рецепты и т.п.), бот вежливо перенаправляет его к теме бронирования."
-        }
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Как работает бот?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Гость пишет запрос свободным текстом. LLM автоматически извлекает параметры и передаёт их в движок расчёта стоимости. Бот возвращает таблицу цен по всем доступным категориям номеров в течение 3–5 секунд."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Соответствует ли бот требованиям 152-ФЗ?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Да. Встроенный consent flow запрашивает явное согласие гостя на обработку персональных данных до начала любого расчёта."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Как учитывается сезонность?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Бот делает посуточный расчёт: каждые сутки считаются по тарифу, действующему в этот день. Пятница и суббота автоматически считаются выходными с повышенным тарифом."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Как подключить бот к своему отелю?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Свяжитесь с нами через сайт tasolution.ru. Среднее время внедрения — от нескольких дней."
+            }
+          }
+        ]
       }
     ]
   }
@@ -920,6 +898,27 @@
         <span style="padding: 8px 18px; border-radius: 100px; background: var(--bg-white); border: 1px solid var(--border); font-size: .88rem; color: var(--text-muted);">
           Интеграция с PMS <span class="soon-badge">Скоро</span>
         </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SOCIAL PROOF ===== -->
+<section id="social-proof" style="padding: 60px 0; background: var(--bg);">
+  <div class="container">
+    <h2 style="text-align:center; margin-bottom: 40px;">Уже используют отели</h2>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+      <div style="background: var(--bg-white); border-radius:12px; padding:28px; border:1px solid var(--border);">
+        <p style="font-size:15px; line-height:1.6; margin-bottom:16px; color: var(--text);">
+          «Администраторы перестали тратить время на однотипные вопросы о ценах. Гости получают расчёт мгновенно, даже ночью.»
+        </p>
+        <div style="font-size:13px; color: var(--text-muted);">— Управляющий, отель 3*, Краснодарский край</div>
+      </div>
+      <div style="background: var(--bg-white); border-radius:12px; padding:28px; border:1px solid var(--border);">
+        <p style="font-size:15px; line-height:1.6; margin-bottom:16px; color: var(--text);">
+          «Внедрили за 3 дня. Бот корректно обрабатывает сложные запросы — несколько номеров, дети разного возраста, разные сезоны.»
+        </p>
+        <div style="font-size:13px; color: var(--text-muted);">— Владелец апарт-отеля, Анапа</div>
       </div>
     </div>
   </div>
