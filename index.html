@@ -322,6 +322,9 @@
       width: 100%; max-width: 380px;
       overflow: hidden;
       animation: float 4s ease-in-out infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     .chat-header {
       background: linear-gradient(135deg, var(--primary), var(--accent));
@@ -734,7 +737,7 @@
         <div class="chat-demo">
           <video autoplay muted loop playsinline
             poster="og-image.png"
-            style="width: 100%; max-width: 340px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.15);">
+            style="width: 100%; max-width: 300px; max-height: 500px; object-fit: contain; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.15);">
             <source src="demo-website.mp4" type="video/mp4">
           </video>
         </div>
