@@ -1041,6 +1041,43 @@
   </div>
 </section>
 
+<!-- ===== CONTACT FORM ===== -->
+<section id="contact" aria-label="Оставить заявку" style="padding:80px 0;background:var(--bg-white);">
+  <div class="container" style="max-width:560px;">
+    <div style="text-align:center;margin-bottom:40px;">
+      <h2 style="font-size:2rem;margin-bottom:12px;">Оставить заявку</h2>
+      <p style="color:var(--text-muted);font-size:1.05rem;">Расскажите о вашем отеле — мы свяжемся и поможем настроить бота</p>
+    </div>
+    <form id="contact-form" onsubmit="handleContactForm(event)" novalidate style="display:flex;flex-direction:column;gap:16px;">
+      <div>
+        <label for="c-name" style="display:block;font-size:.85rem;font-weight:600;margin-bottom:6px;">Ваше имя</label>
+        <input type="text" id="c-name" name="name" placeholder="Иван Петров" required autocomplete="name"
+          style="width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:.95rem;font-family:inherit;outline:none;transition:.2s;"
+          onfocus="this.style.borderColor='var(--primary)';this.style.boxShadow='0 0 0 3px rgba(37,99,235,.1)'"
+          onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
+      </div>
+      <div>
+        <label for="c-contact" style="display:block;font-size:.85rem;font-weight:600;margin-bottom:6px;">Телефон или Telegram</label>
+        <input type="text" id="c-contact" name="contact" placeholder="+7 (___) ___-__-__ или @username" required autocomplete="tel"
+          style="width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:.95rem;font-family:inherit;outline:none;transition:.2s;"
+          onfocus="this.style.borderColor='var(--primary)';this.style.boxShadow='0 0 0 3px rgba(37,99,235,.1)'"
+          onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
+      </div>
+      <div>
+        <label for="c-message" style="display:block;font-size:.85rem;font-weight:600;margin-bottom:6px;">Комментарий <span style="font-weight:400;color:var(--text-light);">(необязательно)</span></label>
+        <textarea id="c-message" name="message" placeholder="Расскажите о вашем объекте или задайте вопрос" rows="3"
+          style="width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:.95rem;font-family:inherit;outline:none;resize:vertical;transition:.2s;"
+          onfocus="this.style.borderColor='var(--primary)';this.style.boxShadow='0 0 0 3px rgba(37,99,235,.1)'"
+          onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'"></textarea>
+      </div>
+      <div class="h-captcha" data-captcha="true" style="margin-bottom:4px;"></div>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;font-size:1rem;">
+        Отправить заявку →
+      </button>
+    </form>
+  </div>
+</section>
+
 <!-- ===== FOOTER ===== -->
 <footer aria-label="Подвал сайта">
   <div class="container">
@@ -1153,6 +1190,65 @@
       }
     });
   });
+</script>
+
+<script src="https://web3forms.com/client/script.js" async defer></script>
+<script>
+  async function handleContactForm(e) {
+    e.preventDefault();
+    const form = e.target;
+    const btn = form.querySelector('[type=submit]');
+    const name = document.getElementById('c-name').value.trim();
+    const contact = document.getElementById('c-contact').value.trim();
+
+    if (!name || !contact) {
+      alert('Пожалуйста, заполните имя и контакт');
+      return;
+    }
+
+    const hcaptchaToken = form.querySelector('[name="h-captcha-response"]')?.value || '';
+
+    btn.textContent = 'Отправляем...';
+    btn.disabled = true;
+
+    const data = {
+      access_key: 'a2920bb2-e79f-4687-9982-39ba30c1e85c',
+      subject: `Заявка с hotelpricingbot.com — ${name}`,
+      from_name: 'hotelpricingbot.com',
+      Имя: name,
+      'Телефон / Telegram': contact,
+      Комментарий: document.getElementById('c-message').value.trim(),
+      'h-captcha-response': hcaptchaToken,
+    };
+
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const result = await res.json();
+
+      if (res.ok && result.success) {
+        btn.textContent = '✓ Заявка отправлена!';
+        btn.style.background = '#16a34a';
+        form.reset();
+        setTimeout(() => {
+          btn.textContent = 'Отправить заявку →';
+          btn.style.background = '';
+          btn.disabled = false;
+        }, 5000);
+      } else {
+        throw new Error(result.message || 'Ошибка сервера');
+      }
+    } catch (err) {
+      console.error('Form error:', err);
+      alert('Ошибка отправки: ' + err.message + '\nПозвоните нам: +7 (861) 213-23-13');
+      btn.textContent = 'Отправить заявку →';
+      btn.style.background = '';
+      btn.disabled = false;
+    }
+  }
 </script>
 </body>
 </html>
