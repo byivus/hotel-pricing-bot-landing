@@ -736,8 +736,8 @@
       <!-- Chat demo -->
       <div class="hero-visual">
         <div class="chat-demo">
-          <video autoplay muted loop playsinline
-            poster="og-image.png"
+          <video id="hero-video" autoplay muted loop playsinline webkit-playsinline
+            preload="auto"
             style="width: 100%; max-width: 300px; max-height: 500px; object-fit: contain; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.15);">
             <source src="demo-website.mp4" type="video/mp4">
           </video>
@@ -1249,6 +1249,29 @@
       btn.disabled = false;
     }
   }
+</script>
+<script>
+// Force autoplay on iOS Safari
+(function(){
+  var v = document.getElementById('hero-video');
+  if (!v) return;
+  // iOS requires user gesture sometimes; try to play on load
+  function tryPlay() {
+    var p = v.play();
+    if (p && p.catch) p.catch(function(){});
+  }
+  if (v.paused) tryPlay();
+  document.addEventListener('DOMContentLoaded', function(){ if (v.paused) tryPlay(); });
+  // Also try on first touch/scroll for stubborn cases
+  var played = false;
+  function onInteract() {
+    if (!played && v.paused) { tryPlay(); played = true; }
+    document.removeEventListener('touchstart', onInteract);
+    document.removeEventListener('scroll', onInteract);
+  }
+  document.addEventListener('touchstart', onInteract, {passive:true});
+  document.addEventListener('scroll', onInteract, {passive:true});
+})();
 </script>
 </body>
 </html>
